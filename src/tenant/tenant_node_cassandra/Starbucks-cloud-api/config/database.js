@@ -4,7 +4,7 @@ var models = Cassandra.createClient({
     clientOptions: {
         contactPoints: ['127.0.0.1'],
         protocolOptions: { port: 9042 },
-        keyspace: 'student',
+        keyspace: 'starbucks',
         queryOptions: {consistency: Cassandra.consistencies.one}
     },
     ormOptions: {
