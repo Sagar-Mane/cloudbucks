@@ -58,5 +58,4 @@ models.connect(function (err) {
          console.log("Schema Order successfully created!");
     });
 });
-
 module.exports = models;
