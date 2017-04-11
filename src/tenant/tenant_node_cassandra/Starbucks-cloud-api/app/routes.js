@@ -1,6 +1,7 @@
 var routes = require('express').Router();
 var models = require('../config/database')
 var url = require('url')
+var schedular = require('../app/schedular')
 
 function randomId() {
     return Math.random().toString(32).slice(2);
@@ -92,6 +93,7 @@ routes.post('/order',function(req, res){
 			var staus = '{"status":"error","message":"Server Error, Try Again Later."}';
 			res.json(JSON.parse(status));
 		} else {
+	        schedular();
 			res.json(order);
 		}
 	});
@@ -131,6 +133,7 @@ routes.post('/order/:order_id/pay',function(req,res) {
 								    models.instance.Order.findOne(query_obj,function(err,ord){
 										res.json(ord);
 									});
+								    schedular();
 								});
 							}
 						});

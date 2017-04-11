@@ -4,7 +4,7 @@ var models = Cassandra.createClient({
     clientOptions: {
         contactPoints: ['127.0.0.1'],
         protocolOptions: { port: 9042 },
-        keyspace: 'starbucks',
+        keyspace: 'student',
         queryOptions: {consistency: Cassandra.consistencies.one}
     },
     ormOptions: {
@@ -55,7 +55,8 @@ models.connect(function (err) {
         key:["id"]
     }, function(err, UserModel){
     	 if(err) throw err;
-         console.log("Schema Order successfully created!");
+         console.log("Database Connection and Configuration Successful!");
     });
 });
+
 module.exports = models;
