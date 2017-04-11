@@ -40,16 +40,21 @@ def place_order():
     print "Reporting from place order api"
     #print "Incoming data=",request.data        //Ref For angular incoming data
     order_id=uuid.uuid1()
+    x = str(order_id)
     print order_id
     data = request.get_json(force = True)
-    collection.insert_one({"id":order_id,"order":data})
-
-    pprint.pprint(collection.find_one({"id": "8700e90f-1e45-11e7-a389-48e244a14b48"}))
-
+    print "hahahaha"
+    collection.insert_one({"id":x,"order":data})
     #print data
-    return jsonify({'order': data})
+    return jsonify({'order_id':x,'order': data})
 
-
+@app.route("/starbucks/order/<string:order_id>", methods=['GET'])
+def get_order(order_id):
+    print "Reporting from get order api"
+    print order_id
+    data=collection.find_one({"id": order_id})
+    print data
+    return jsonify({'order':"Got it"})
 
 if __name__ == "__main__":
     print "Python Server Running at port 5000"
