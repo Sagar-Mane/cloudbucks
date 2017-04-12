@@ -1,60 +1,29 @@
-from flask import Flask, request, jsonify
+from flask import Flask
+from flask import request, jsonify
 import uuid
-from pymongo import MongoClient
-import pprint
-client = MongoClient('mongodb://localhost:27017/')
-db = client.starbucks   #database
-collection = db.orders  #collection
+import Starbucks_Api
+
 app = Flask(__name__)
-
-order ={
-        "id": 1,
-        "location": "take-out",
-        "items":[
-            {'qty':1, "name": "latte", "milk": "whole", "size": "large"}
-        ],
-        "links":[
-            {'payment':"haha", "order":"hihahaha"}
-        ],
-        "status":"Placed",
-        "message":"Order has been placed"
-    }
-#collection.insert_one(order)    #inserting json object order
-"""get_order=collection.find_one({"status":"Placed"})
-print get_order['status']       #accessing key and values
-get_order['status']="invalid"
-collection.save(get_order)
-print get_order['status']
-collection.update({'_id':"58ea889c4399413f64282191"}, {"$set": get_order}, upsert=False)    #updating the order
-"""
-#pprint.pprint(collection.find_one({"status":"Placed"})) #Querying the order
-
 
 @app.route("/",methods=['GET'])
 def main():
-    print "Building order api"
-    return jsonify({'order': order})
+    print "Ping Api"
+    return jsonify({'Ping': Starbucks_Api.ping()})
 
 @app.route("/starbucks/order", methods=['POST'])
 def place_order():
-    print "Reporting from place order api"
-    #print "Incoming data=",request.data        //Ref For angular incoming data
-    order_id=uuid.uuid1()
+
+    order_id = uuid.uuid1()
     x = str(order_id)
-    print order_id
-    data = request.get_json(force = True)
-    print "hahahaha"
-    collection.insert_one({"id":x,"order":data})
-    #print data
+    data=Starbucks_Api.place_Order(x)
     return jsonify({'order_id':x,'order': data})
 
 @app.route("/starbucks/order/<string:order_id>", methods=['GET'])
 def get_order(order_id):
-    print "Reporting from get order api"
-    print order_id
-    data=collection.find_one({"id": order_id})
-    print data
-    return jsonify({'order':"Got it"})
+
+    data=Starbucks_Api.get_Order(order_id)
+    return jsonify({'order':data})
+
 
 if __name__ == "__main__":
     print "Python Server Running at port 5000"
