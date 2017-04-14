@@ -25,7 +25,7 @@ def get_order(order_id):
 @app.route("/starbucks/orders", methods=['GET'])
 def get_orders():
     data=Starbucks_Api.get_Orders()
-    return jsonify({'orders': data})
+    return data
 
 @app.route("/starbucks/order/<string:order_id>", methods=['DELETE'])
 def cancel_order(order_id):

@@ -1,5 +1,6 @@
+from json import dumps
 
-from flask import request
+from flask import request, jsonify, json
 import Mongo_Connection
 
 
@@ -18,10 +19,13 @@ def get_Order(order_id):
     return data
 
 def get_Orders():
-    cursor = Mongo_Connection.collection.find()
+    data=[]
+    cursor = Mongo_Connection.collection.find(projection={'_id':False})
     for document in cursor:
-        print(document)
-    return "get orders"
+        data.append(document)
+    print "Printing array data",data
+
+    return jsonify({'orders':data})
 
 def cancel_Order(order_id):
     print "Cancelling order with id",order_id
