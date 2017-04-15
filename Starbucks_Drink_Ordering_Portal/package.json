@@ -1,0 +1,12 @@
+{
+  "name": "Starbucks_Drink_Ordering_Portal",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.2.6",
+    "ejs": "*"
+  }
+}
