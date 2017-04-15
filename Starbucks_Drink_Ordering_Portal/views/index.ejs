@@ -1,11 +1,55 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+ 
+ <head> 
+ 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+	<script	src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<script src="Angular/main.js"></script>
+ </head>
+
+
+ 
+<body ng-app="myapp">
+ <div id="wrapper" data-spy="scroll" data-target="#spy" class="">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper" class="">
+        <nav id="spy">
+            <ul class="sidebar-nav nav">
+                <li class="sidebar-brand active"> <a href="#home" class=""><span>Home</span></a>
+
+                </li>
+                <li> <a href="/#/store1" class="w3-border-bottom">
+                            <span>Store 1</span>
+                        </a>
+                </li>
+                <li> <a href="/#/store2" class="w3-border-bottom">
+                            <span>Store 2</span>
+                        </a>
+
+                </li>
+                <li> <a href="/#/store3" class="w3-border-bottom">
+                            <span>Store 3</span>
+                        </a>
+
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Page content -->
+    <div ng-view></div>
+</div>
+</body>
+
+
+
 </html>
