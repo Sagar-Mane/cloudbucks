@@ -16,6 +16,7 @@ app.config(function($routeProvider) {
 app.controller("store1_controller",function($scope,$http,$rootScope){
 	$rootScope.bgimg = "https://s-media-cache-ak0.pinimg.com/originals/1b/60/78/1b6078385f4181319017a1b6859fc31c.jpg";
 	console.log("Reporting from store 1 controller");
+	$scope.success=true;
 });
 
 app.controller("store2_controller",function($scope,$http){
