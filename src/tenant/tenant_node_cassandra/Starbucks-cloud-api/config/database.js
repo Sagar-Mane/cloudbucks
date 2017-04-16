@@ -2,9 +2,9 @@ var Cassandra = require('express-cassandra');
 
 var models = Cassandra.createClient({
     clientOptions: {
-        contactPoints: ['127.0.0.1'],
+        contactPoints: ['54.219.131.149'],
         protocolOptions: { port: 9042 },
-        keyspace: 'student',
+        keyspace: 'starbuck',
         queryOptions: {consistency: Cassandra.consistencies.one}
     },
     ormOptions: {
