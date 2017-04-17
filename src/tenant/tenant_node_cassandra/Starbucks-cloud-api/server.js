@@ -5,7 +5,7 @@ var morgan = require('morgan')
 var models = require('./config/database')
 var app = express()
 
-port = process.env.PORT || 80;
+port = process.env.PORT || 9090;
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
@@ -16,7 +16,8 @@ app.use(function(req, res, next) {
 });
 
 app.use('/v3/starbucks/',routes);
-
+/*var kongIp = process.argv[2];
+console.log(kongIp);*/
 
 app.listen(port, function () {
   console.log('Server running at port: '+port);

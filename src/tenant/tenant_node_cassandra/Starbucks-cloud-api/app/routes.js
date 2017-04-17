@@ -1,19 +1,20 @@
 var routes = require('express').Router();
 var models = require('../config/database')
 var url = require('url')
+var uuidV1 = require('uuid/v1');
 var schedular = require('../app/schedular')
 
 function randomId() {
-    return Math.random().toString(32).slice(2);
+    return uuidV1();
 }
 
 function fullUrl(req) {
 	  return url.format({
-	    protocol: req.protocol,
-	    host: req.get('host'),
-	    pathname: 'v3/starbucks/'
+	    //protocol: req.protocol,
+	    //host: req.get('host'),
+	    pathname: '/v3/starbucks'
 	  });
-	}
+}
 
 routes.get('/',function(req, res){
 	res.send("Health check successful!");
@@ -23,7 +24,7 @@ routes.get('/',function(req, res){
 
 POST    /order
         Create a new order, and upon success, 
-        receive a Location header specifying the new orderâ€™s URI.
+        receive a Location header specifying the new order URI.
 
 GET     /order/{order_id}
         Request the current state of the order specified by the URI.
@@ -79,11 +80,12 @@ routes.get('/orders',function(req, res){
 routes.post('/order',function(req, res){
 	var randId = randomId();
 	var baseUrl = fullUrl(req);
+	
 	var order = new models.instance.Order({
 		id : randId,
-		items : {qty:1,name:'latte',milk:'skimmed',size:'tall'},
-		links : {'payment':baseUrl+'order/'+randId+'/pay','order':baseUrl+'order/'+randId},
-		location : 'take-out',
+		items : {qty:req.body.items[0].qty,name:req.body.items[0].name,milk:req.body.items[0].milk,size:req.body.items[0].size},
+		links : {'payment':baseUrl+'/order/'+randId+'/pay','order':baseUrl+'/order/'+randId},
+		location : req.body.location,
 		message : 'Order has been placed.', 
 		status : 'PLACED'
 	});
@@ -154,7 +156,7 @@ routes.delete('/order/:order_id',function(req,res){
 		res.json(JSON.parse(status));
 	} else {
 		models.instance.Order.findOne({id:orderId},function(err,order){
-			console.log(order.status);
+			//console.log(order.status);
 			if (err) {
 				var status = '{"status":"error","message":"Error cancelling Order."}';
 				res.json(JSON.parse(status));
@@ -183,7 +185,41 @@ routes.delete('/order/:order_id',function(req,res){
 });
 
 routes.put('/order/:order_id',function(req,res){
-	res.send("check!");
+	var orderId = req.params.order_id;
+	if (orderId.trim.length) {
+		var status = '{"status":"error","message":"Order not found."}';
+		res.json(JSON.parse(status));
+	} else {
+		models.instance.Order.findOne({id:orderId},function(err,order){
+			if (err) {
+				var status = '{"status":"error","message":"Server Error, Try Again Later."}';
+				res.json(JSON.parse(status));
+			} else {
+				if(order.length==0){
+					var status = '{"status":"error","message":"Order not found."}';
+					res.json(JSON.parse(status));
+				} else if (order.status.trim() !=='PLACED') {
+					var status = '{"status":"error","message":"Order update rejected."}';
+					res.json(JSON.parse(status));
+				} else {
+					order.location = req.body.location;
+					order.items.qty = req.body.items[0].qty;
+					order.items.name = req.body.items[0].name;
+					order.items.milk = req.body.items[0].milk;
+					order.items.size = req.body.items[0].size;
+					order.save(function(err){
+						if(err) {
+							console.log(err);
+							var staus = '{"status":"error","message":"Server Error, Try Again Later."}';
+							res.json(JSON.parse(status));
+						} else {
+							res.json(order);
+						}
+					});
+				}
+			}
+		});
+	}
 });
 
 module.exports = routes;
