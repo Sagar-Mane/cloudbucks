@@ -126,7 +126,7 @@ func GetMD5Hash(text string) string {
 func GetOrdersEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	var orders []Order
+	var orders = []Order{}
 	query := gocb.NewN1qlQuery("SELECT * FROM starbucks AS ordr")
 	if bucket == nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -145,7 +145,7 @@ func GetOrdersEndpoint(w http.ResponseWriter, req *http.Request) {
 	var row OrderRow
 	for rows.Next(&row) {
 		URI := "http://" + hostIP + ":" + hostPort + "/" + storeName + "/v3/starbucks/order/" + row.Order.ID
-		if row.Order.Status == &PLACED {
+		if *row.Order.Status == PLACED {
 			row.Order.Links = &Links{Payment: URI + "/pay", Order: URI}
 		} else {
 			row.Order.Links = &Links{Order: URI}
@@ -182,7 +182,7 @@ func GetOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	rows.One(&orderRow)
 	if orderRow.Order.ID != "" {
 		URI := "http://" + hostIP + ":" + hostPort + "/" + storeName + "/v3/starbucks/order/" + orderRow.Order.ID
-		if orderRow.Order.Status == &PLACED {
+		if *orderRow.Order.Status == PLACED {
 			orderRow.Order.Links = &Links{Payment: URI + "/pay", Order: URI}
 		} else {
 			orderRow.Order.Links = &Links{Order: URI}
