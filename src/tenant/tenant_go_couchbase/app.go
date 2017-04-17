@@ -1,3 +1,8 @@
+/*
+	Starbucks ordering
+	Author: Sushant Vairagade
+*/
+
 package main
 
 import (
@@ -6,6 +11,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
@@ -17,6 +24,10 @@ import (
 )
 
 var bucket *gocb.Bucket
+
+var hostIP string
+var hostPort string
+var storeName string
 
 //OrderStatus (Enums in Go) https://andrey.nering.com.br/2016/constants-and-enums-in-go-lang/
 type OrderStatus string
@@ -65,6 +76,11 @@ func GenerateUUID() string {
 }
 
 func GetLocalIP() string {
+
+	if hostIP != "" {
+		return hostIP
+	}
+
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return ""
@@ -128,6 +144,12 @@ func GetOrdersEndpoint(w http.ResponseWriter, req *http.Request) {
 
 	var row OrderRow
 	for rows.Next(&row) {
+		URI := "http://" + hostIP + ":" + hostPort + "/" + storeName + "/v3/starbucks/order/" + row.Order.ID
+		if row.Order.Status == &PLACED {
+			row.Order.Links = &Links{Payment: URI + "/pay", Order: URI}
+		} else {
+			row.Order.Links = &Links{Order: URI}
+		}
 		orders = append(orders, row.Order)
 		row = OrderRow{}
 	}
@@ -159,6 +181,13 @@ func GetOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	var orderRow OrderRow
 	rows.One(&orderRow)
 	if orderRow.Order.ID != "" {
+		URI := "http://" + hostIP + ":" + hostPort + "/" + storeName + "/v3/starbucks/order/" + orderRow.Order.ID
+		if orderRow.Order.Status == &PLACED {
+			orderRow.Order.Links = &Links{Payment: URI + "/pay", Order: URI}
+		} else {
+			orderRow.Order.Links = &Links{Order: URI}
+		}
+
 		json.NewEncoder(w).Encode(orderRow.Order)
 		return
 	}
@@ -174,9 +203,7 @@ func PlaceOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	var order Order
 	_ = json.NewDecoder(req.Body).Decode(&order)
 	UUID := GenerateUUID()
-	URI := "http://" + GetLocalIP() + ":9090/v3/starbucks/order/" + UUID
 	order.ID = UUID
-	order.Links = &Links{Payment: URI + "/pay", Order: URI}
 	order.Status = &PLACED
 	order.Message = "Order has been placed."
 	orderJSON, err := json.Marshal(order)
@@ -192,6 +219,8 @@ func PlaceOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Println("ERRROR CREATING DOCUMENT:", err)
 	}
+	URI := "http://" + hostIP + ":" + hostPort + "/" + storeName + "/v3/starbucks/order/" + order.ID
+	order.Links = &Links{Payment: URI + "/pay", Order: URI}
 	json.NewEncoder(w).Encode(order)
 }
 
@@ -211,8 +240,6 @@ func UpdateOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 			var newOrder Order
 			_ = json.NewDecoder(req.Body).Decode(&newOrder)
 			newOrder.ID = orderRow.Order.ID
-			URI := "http://" + GetLocalIP() + ":9090/v3/starbucks/order/" + newOrder.ID
-			newOrder.Links = &Links{Payment: URI + "/pay", Order: URI}
 			newOrder.Status = &PLACED
 			newOrder.Message = "Order has been placed."
 			newOrderJSON, err := json.Marshal(newOrder)
@@ -230,6 +257,8 @@ func UpdateOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 				json.NewEncoder(w).Encode(httpError)
 				return
 			}
+			URI := "http://" + GetLocalIP() + ":" + hostPort + "/" + storeName + "/v3/starbucks/order/" + orderRow.Order.ID
+			newOrder.Links = &Links{Payment: URI + "/pay", Order: URI}
 			json.NewEncoder(w).Encode(newOrder)
 		} else {
 			w.WriteHeader(http.StatusPreconditionFailed)
@@ -278,7 +307,6 @@ func CancelOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-
 func OrderPaymentEndpoint(w http.ResponseWriter, req *http.Request) {
 	var n1qlParams []interface{}
 	query := gocb.NewN1qlQuery("SELECT * FROM starbucks AS ordr WHERE META(ordr).id = $1")
@@ -289,10 +317,8 @@ func OrderPaymentEndpoint(w http.ResponseWriter, req *http.Request) {
 	rows.One(&orderRow)
 	if orderRow.Order.ID != "" {
 		if *orderRow.Order.Status == PLACED {
-			URI := "http://" + GetLocalIP() + ":9090/v3/starbucks/order/" + orderRow.Order.ID
-			orderRow.Order.Links = &Links{Order: URI}
 			orderRow.Order.Status = &PAID
-			orderRow.Order.Message = "Payment Accepted." 
+			orderRow.Order.Message = "Payment Accepted."
 			orderJSON, err := json.Marshal(orderRow.Order)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -309,6 +335,8 @@ func OrderPaymentEndpoint(w http.ResponseWriter, req *http.Request) {
 				json.NewEncoder(w).Encode(httpError)
 				return
 			}
+			URI := "http://" + GetLocalIP() + ":" + hostPort + "/" + storeName + "/v3/starbucks/order/" + orderRow.Order.ID
+			orderRow.Order.Links = &Links{Order: URI}
 			json.NewEncoder(w).Encode(orderRow.Order)
 		} else {
 			w.WriteHeader(http.StatusPreconditionFailed)
@@ -323,10 +351,83 @@ func OrderPaymentEndpoint(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func main() {
+type IDRow struct {
+	ID string `json:"id,omitempty"`
+}
 
+func getBaristaWorking() {
+	fmt.Println("Barista on the go")
+	for true {
+		time.Sleep(5000 * time.Millisecond)
+		getPaidOrdersQuery := gocb.NewN1qlQuery("SELECT META(starbucks).id FROM starbucks WHERE status = \"PAID\"")
+		if bucket == nil {
+			fmt.Println("BARISTA UNABLE TO WORK")
+			continue
+		}
+		rows, err := bucket.ExecuteN1qlQuery(getPaidOrdersQuery, nil)
+		if err != nil {
+			fmt.Println("BARISTA UNABLE TO WORK", err)
+			continue
+		}
+		var row IDRow
+		for rows.Next(&row) {
+			fmt.Println("Processing order", row.ID)
+			var n1qlParams []interface{}
+			n1qlParams = append(n1qlParams, row.ID)
+			fmt.Println("Preparing order", row.ID)
+			updatePaidQuery := gocb.NewN1qlQuery("UPDATE starbucks USE KEYS $1 SET status = \"PREPARING\", message = \"Order preparations in progress.\"")
+			if bucket == nil {
+				fmt.Println("BARISTA UNABLE TO WORK")
+				continue
+			}
+			_, err := bucket.ExecuteN1qlQuery(updatePaidQuery, n1qlParams)
+			if err != nil {
+				fmt.Println("BARISTA UNABLE TO WORK")
+				continue
+			}
+			time.Sleep(2000 * time.Millisecond)
+			fmt.Println("Serving order", row.ID)
+			updatePreparingQuery := gocb.NewN1qlQuery("UPDATE starbucks USE KEYS $1 SET status = \"SERVED\", message = \"Order served, wating for Customer pickup.\"")
+			if bucket == nil {
+				fmt.Println("BARISTA UNABLE TO WORK")
+				continue
+			}
+			_, err = bucket.ExecuteN1qlQuery(updatePreparingQuery, n1qlParams)
+			if err != nil {
+				fmt.Println("BARISTA UNABLE TO WORK")
+				continue
+			}
+			time.Sleep(10000 * time.Millisecond)
+			fmt.Println("Waiting to get picked order", row.ID)
+			updateServedQuery := gocb.NewN1qlQuery("UPDATE starbucks USE KEYS $1 SET status = \"COLLECTED\", message = \"Order retrived by Customer.\"")
+			if bucket == nil {
+				fmt.Println("BARISTA UNABLE TO WORK")
+				continue
+			}
+			_, err = bucket.ExecuteN1qlQuery(updateServedQuery, n1qlParams)
+			if err != nil {
+				fmt.Println("BARISTA UNABLE TO WORK")
+				continue
+			}
+		}
+	}
+
+}
+
+func main() {
+	fmt.Println("Env. variables DB", os.Getenv("DB_IP"), "Host", os.Getenv("HOST_IP"), os.Getenv("HOST_PORT"), os.Getenv("STORE_NAME"))
+	//Create Index
+	//CREATE PRIMARY INDEX `starbucks-primary-index` ON `starbucks` USING GSI;
 	// Connect to Cluster
-	cluster, err := gocb.Connect("couchbase://127.0.0.1")
+	cluster, err := gocb.Connect("couchbase://" + os.Getenv("DB_IP"))
+	hostIP = os.Getenv("HOST_IP")
+	storeName = os.Getenv("STORE_NAME")
+	if hostIP == "" {
+		hostIP = GetLocalIP()
+	}
+
+	hostPort = os.Getenv("HOST_PORT")
+
 	if err != nil {
 		fmt.Println("ERRROR CONNECTING TO CLUSTER:", err)
 	}
@@ -343,7 +444,9 @@ func main() {
 	router.HandleFunc("/v3/starbucks/order/{id}", UpdateOrderEndpoint).Methods("PUT")
 	router.HandleFunc("/v3/starbucks/order/{id}", CancelOrderEndpoint).Methods("DELETE")
 	router.HandleFunc("/v3/starbucks/order/{id}/pay", OrderPaymentEndpoint).Methods("POST")
-	
+
+	go getBaristaWorking()
+
 	log.Fatal(http.ListenAndServe(":9090", router))
 
 }
