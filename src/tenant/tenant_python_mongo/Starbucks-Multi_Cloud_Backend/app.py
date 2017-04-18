@@ -1,5 +1,5 @@
-from flask import Flask
-from flask import request, jsonify
+from flask import Flask, json
+from flask import jsonify
 import uuid
 import Starbucks_Api
 
@@ -10,39 +10,38 @@ def main():
     print "Ping Api"
     return jsonify({'Ping': Starbucks_Api.ping()})
 
-@app.route("/starbucks/order", methods=['POST'])
+@app.route("/v3/starbucks/order", methods=['POST'])
 def place_order():
     order_id = uuid.uuid1()
-    x = str(order_id)
-    data=Starbucks_Api.place_Order(x)
-    return jsonify({'order': data})
+    id = str(order_id)
+    order=Starbucks_Api.place_Order(id)
+    return json.dumps(order)
 
-@app.route("/starbucks/order/<string:order_id>", methods=['GET'])
+@app.route("/v3/starbucks/order/<string:order_id>", methods=['GET'])
 def get_order(order_id):
-    data=Starbucks_Api.get_Order(order_id)
-    return jsonify({'order':data})
+    order=Starbucks_Api.get_Order(order_id)
+    return order
 
-@app.route("/starbucks/orders", methods=['GET'])
+@app.route("/v3/starbucks/orders", methods=['GET'])
 def get_orders():
-    data=Starbucks_Api.get_Orders()
-    return data
+    orders=Starbucks_Api.get_Orders()
+    return orders
 
-@app.route("/starbucks/order/<string:order_id>", methods=['DELETE'])
+@app.route("/v3/starbucks/order/<string:order_id>", methods=['DELETE'])
 def cancel_order(order_id):
-    print order_id
     status=Starbucks_Api.cancel_Order(order_id)
-    return jsonify({'status': status})
+    return status
 
-@app.route("/starbucks/order/<string:order_id>", methods=['PUT'])
+@app.route("/v3/starbucks/order/<string:order_id>", methods=['PUT'])
 def update_order(order_id):
-    message=Starbucks_Api.update_Order(order_id)
-    return jsonify({'message': message})
+    order=Starbucks_Api.update_Order(order_id)
+    return order
 
-@app.route("/starbucks/order/<string:order_id>/pay", methods=['POST'])
+@app.route("/v3/starbucks/order/<string:order_id>/pay", methods=['POST'])
 def pay_order(order_id):
-    message=Starbucks_Api.pay_Order(order_id)
-    return jsonify({"message":message})
+    order=Starbucks_Api.pay_Order(order_id)
+    return order
 
 if __name__ == "__main__":
-    print "Python Server Running at port 5000"
-    app.run()
+    print "Python Server Running at port 90"
+    app.run(port=90)
