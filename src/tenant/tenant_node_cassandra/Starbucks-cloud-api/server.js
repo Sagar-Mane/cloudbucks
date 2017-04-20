@@ -18,6 +18,7 @@ app.use(function(req, res, next) {
 app.use('/v3/starbucks/',routes);
 /*var kongIp = process.argv[2];
 console.log(kongIp);*/
+
 app.listen(port, function () {
   console.log('Server running at port: '+port);
 });

@@ -4,17 +4,20 @@ var url = require('url')
 var uuidV1 = require('uuid/v1');
 var schedular = require('../app/schedular')
 
+const kongIp = process.argv[2];
+
 function randomId() {
     return uuidV1();
 }
 
 function fullUrl(req) {
 	  return url.format({
-	    //protocol: req.protocol,
-	    //host: req.get('host'),
+	    protocol: req.protocol,
+	    host: ( kongIp ? kongIp : req.get('host')),
 	    pathname: '/v3/starbucks'
 	  });
 }
+
 
 routes.get('/',function(req, res){
 	res.send("Health check successful!");
