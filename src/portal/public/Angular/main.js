@@ -49,22 +49,22 @@ app.controller("store1_controller", function($scope, $http, $route, $rootScope,
 
 	};
 	
-	$scope.deleteOrder = function(order_id) {
-		console.log("Reporting from delete order" + order_id);
+	$scope.deleteOrder = function(url) {
+		console.log("Reporting from delete order " + url);
 		$http({
 			method : 'DELETE',
-			url : link + 'store1/v3/starbucks/order/' + order_id,
+			url : url,
 		}).success(function(data) {
 			console.log("Order DELETED");
 		});
 
 	};
 	
-	$scope.updateOrder = function(order_id) {
-		console.log("Reporting from update order" + order_id);
+	$scope.updateOrder = function(url) {
+		console.log("Reporting from update order " + url);
 		$http({
 			method : 'PUT',
-			url : link + 'store1/v3/starbucks/order/' + order_id,
+			url : url,
 			data : {
 
 			}
@@ -74,11 +74,11 @@ app.controller("store1_controller", function($scope, $http, $route, $rootScope,
 
 	};
 	
-	$scope.payOrder = function(order_id) {
-		console.log("Reporting from pay order" + order_id);
+	$scope.payOrder = function(url) {
+		console.log("Reporting from pay order " + url);
 		$http({
 			method : 'POST',
-			url : link + 'store1/v3/starbucks/order/' + order_id + '/pay',
+			url : url,
 		}).success(function(data) {
 			console.log(data);
 			console.log("Order PAID");
@@ -107,18 +107,58 @@ app.controller("store2_controller", function($scope, $route, $http) {
 			$scope.orders = data;
 		});
 	};
-	
-	$scope.payOrder = function(order_id) {
-		console.log("Reporting from pay order" + order_id);
-		$http({
-			method : 'POST',
-			url : link + '/store2/v3/starbucks/order/' + order_id + '/pay',
-		}).success(function(data) {
-			console.log(data);
-			console.log("Order PAID");
-			setTimeout($route.reload(), 3000);
-		});
-	};
+
+    $scope.placeOrder = function() {
+        console.log("Reporting from place order");
+        console.log("Order:\n Name:" + $scope.name + "\nSize:" + $scope.size
+            + "\nMilk:" + $scope.milk + "\nQuantity:" + $scope.quantity);
+        $http({
+            method : 'POST',
+            url : link + 'store2/v3/starbucks/order',
+            data : {
+
+            }
+        }).success(function(data) {
+            console.log("Order PLACED");
+        });
+
+    };
+
+    $scope.deleteOrder = function(url) {
+        console.log("Reporting from delete order " + url);
+        $http({
+            method : 'DELETE',
+            url : url,
+        }).success(function(data) {
+            console.log("Order DELETED");
+        });
+
+    };
+
+    $scope.updateOrder = function(url) {
+        console.log("Reporting from update order " + url);
+        $http({
+            method : 'PUT',
+            url : url,
+            data : {
+            }
+        }).success(function(data) {
+            console.log("Order UPDATED");
+        });
+
+    };
+
+    $scope.payOrder = function(url) {
+        console.log("Reporting from pay order " + url);
+        $http({
+            method : 'POST',
+            url : url,
+        }).success(function(data) {
+            console.log(data);
+            console.log("Order PAID");
+            setTimeout($route.reload(), 3000);
+        });
+    };
 	
 	$scope.getOrders();
 });
@@ -142,17 +182,58 @@ app.controller("store3_controller", function($scope, $route, $http) {
 		});
 	};
 
-	$scope.payOrder = function(order_id) {
-		console.log("Reporting from pay order" + order_id);
-		$http({
-			method : 'POST',
-			url : link + '/store3/v3/starbucks/order/' + order_id + '/pay',
-		}).success(function(data) {
-			console.log(data);
-			console.log("Order PAID");
-			setTimeout($route.reload(), 3000);
-		});
-	};
+    $scope.placeOrder = function() {
+        console.log("Reporting from place order");
+        console.log("Order:\n Name:" + $scope.name + "\nSize:" + $scope.size
+            + "\nMilk:" + $scope.milk + "\nQuantity:" + $scope.quantity);
+        $http({
+            method : 'POST',
+            url : link + 'store3/v3/starbucks/order',
+            data : {
+
+            }
+        }).success(function(data) {
+            console.log("Order PLACED");
+        });
+
+    };
+
+    $scope.deleteOrder = function(url) {
+        console.log("Reporting from delete order " + url);
+        $http({
+            method : 'DELETE',
+            url : url,
+        }).success(function(data) {
+            console.log("Order DELETED");
+        });
+
+    };
+
+    $scope.updateOrder = function(url) {
+        console.log("Reporting from update order " + url);
+        $http({
+            method : 'PUT',
+            url : url,
+            data : {
+
+            }
+        }).success(function(data) {
+            console.log("Order UPDATED");
+        });
+
+    };
+
+    $scope.payOrder = function(url) {
+        console.log("Reporting from pay order " + url);
+        $http({
+            method : 'POST',
+            url : url,
+        }).success(function(data) {
+            console.log(data);
+            console.log("Order PAID");
+            setTimeout($route.reload(), 3000);
+        });
+    };
 
 	$scope.getOrders();
 
