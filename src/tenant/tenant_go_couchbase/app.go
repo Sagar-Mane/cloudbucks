@@ -125,7 +125,9 @@ func GetMD5Hash(text string) string {
 
 func GetOrdersEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "application/json")
+
 	var orders = []Order{}
 	query := gocb.NewN1qlQuery("SELECT * FROM starbucks AS ordr")
 	if bucket == nil {
@@ -159,6 +161,7 @@ func GetOrdersEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func GetOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "application/json")
 
 	var n1qlParams []interface{}
@@ -199,7 +202,9 @@ func GetOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func PlaceOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "application/json")
+
 	var order Order
 	_ = json.NewDecoder(req.Body).Decode(&order)
 	UUID := GenerateUUID()
@@ -226,6 +231,7 @@ func PlaceOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func UpdateOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "application/json")
 
 	var n1qlParams []interface{}
@@ -274,7 +280,9 @@ func UpdateOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func CancelOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
 	w.Header().Set("Content-Type", "application/json")
+
 	var n1qlParams []interface{}
 	query := gocb.NewN1qlQuery("SELECT * FROM starbucks AS ordr WHERE META(ordr).id = $1")
 	params := mux.Vars(req)
@@ -295,6 +303,9 @@ func CancelOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 				json.NewEncoder(w).Encode(httpError)
 				return
 			}
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(&Order{})
 		} else {
 			w.WriteHeader(http.StatusPreconditionFailed)
@@ -310,6 +321,10 @@ func CancelOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 }
 
 func OrderPaymentEndpoint(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	w.Header().Set("Content-Type", "application/json")
+
 	var n1qlParams []interface{}
 	query := gocb.NewN1qlQuery("SELECT * FROM starbucks AS ordr WHERE META(ordr).id = $1")
 	params := mux.Vars(req)
