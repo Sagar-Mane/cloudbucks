@@ -43,6 +43,12 @@ def cancel_Order(order_id):
             'message':"Order not found"
         }
         return json.dumps(message)
+    elif order['status'] == "PAID" or order['status'] == "PREPARING" or order['status'] == "SERVED" or order['status'] == "COLLECTED":
+        message = {
+            'status': "error",
+            'message': "Order payment done hence cannot be deleted "
+        }
+        return json.dumps(message)
     else:
         Mongo_Connection.collection.remove({"id": order_id})
         message = {
@@ -53,9 +59,17 @@ def cancel_Order(order_id):
 
 def update_Order(order_id):
     data = request.get_json(force=True)
-    Mongo_Connection.collection.update({"id": order_id},{"$set":{"items":data['items']}})   #updating the order
     order = Mongo_Connection.collection.find_one({"id": order_id}, {"_id": 0})
-    return json.dumps(order)
+    if order['status'] == "PAID" or order['status'] == "PREPARING" or order['status'] == "SERVED" or order['status'] == "COLLECTED":
+        message={
+            'status':'error',
+            'message':'order update rejected'
+        }
+        return json.dumps(message)
+    else:
+        Mongo_Connection.collection.update({"id": order_id}, {"$set": {"items": data['items']}})  # updating the order
+        order = Mongo_Connection.collection.find_one({"id": order_id}, {"_id": 0})
+        return json.dumps(order)
 
 def pay_Order(order_id):
     order = Mongo_Connection.collection.find_one({"id": order_id}, {"_id": 0})
