@@ -85,12 +85,10 @@ app
 								}).success(function(data) {
 							console.log("Order PAID");
 						});
-
 					};
-
 				});
 
-app.controller("store2_controller", function($scope, $http) {
+app.controller("store2_controller", function($scope, $route, $http) {
 	console.log("Reporting from store 2 controller");
 	$scope.success = true;
 	$scope.show = false;
@@ -104,9 +102,19 @@ app.controller("store2_controller", function($scope, $http) {
 			$scope.orders = data;
 		});
 	};
-
+	$scope.payOrder = function(order_id) {
+		console.log("Reporting from pay order" + order_id);
+		$http(
+				{
+					method : 'POST',
+					url : 'http://52.53.220.34:8000/store2/v3/starbucks/order/'+order_id+'/pay',
+				}).success(function(data) {
+					console.log(data);
+					console.log("Order PAID");
+					setTimeout($route.reload(),3000);
+		});
+	};
 	$scope.getOrders();
-
 });
 
 app.controller("store3_controller", function($scope, $http) {
