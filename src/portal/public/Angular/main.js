@@ -1,4 +1,5 @@
 var app = angular.module('myapp', [ 'ngRoute' ]);
+
 var link = 'http://52.53.220.34:8000';
 
 app.config(function($routeProvider) {
