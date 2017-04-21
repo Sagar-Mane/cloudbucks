@@ -35,19 +35,29 @@ app.controller("store1_controller", function($scope, $http, $route, $rootScope,
 	
 	$scope.placeOrder = function() {
 		console.log("Reporting from place order");
-		console.log("Order:\n Name:" + $scope.name + "\nSize:" + $scope.size
-				+ "\nMilk:" + $scope.milk + "\nQuantity:" + $scope.quantity);
+		
+		var OrderDetails = {
+						"location" : "store-1",
+						"items" : [ {
+						"qty" : $scope.quantity,
+						"name" : $scope.name,
+						"milk" : $scope.milk,
+						"size" : $scope.size
+						} ]
+					};
+						
 		$http({
 			method : 'POST',
-			url : link + 'store1/v3/starbucks/order',
-			data : {
-
-			}
+			url : link + '/store2/v3/starbucks/order',
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			data : OrderDetails
+			
 		}).success(function(data) {
 			console.log("Order PLACED");
 		});
 
 	};
+
 	
 	$scope.deleteOrder = function(url) {
 		console.log("Reporting from delete order " + url);
@@ -114,7 +124,7 @@ app.controller("store2_controller", function($scope, $route, $http) {
             + "\nMilk:" + $scope.milk + "\nQuantity:" + $scope.quantity);
         $http({
             method : 'POST',
-            url : link + 'store2/v3/starbucks/order',
+            url : link + '/store2/v3/starbucks/order',
             data : {
 
             }
@@ -159,6 +169,8 @@ app.controller("store2_controller", function($scope, $route, $http) {
             setTimeout($route.reload(), 3000);
         });
     };
+	
+	
 	
 	$scope.getOrders();
 });
