@@ -7,16 +7,17 @@ from threading import Thread
 def ping():
     return "success"
 
-def place_Order(order_id):
+def place_Order(order_id,ip):
     data = request.get_json(force=True)
     links={
-        "payment": "localhost:9090/v3/starbucks/order/" + order_id + "/pay",
-        "order":"localhost:9090/v3/starbucks/order/" + order_id
+        "payment": ip+"/v3/starbucks/order/" + order_id + "/pay",
+        "order":ip+"/v3/starbucks/order/" + order_id
     }
     data['links']=links
     data['id']=order_id
     data['status']="PLACED"
     data['message']="Order has been placed"
+    print links
     Mongo_Connection.collection.insert_one(data)
     order= Mongo_Connection.collection.find_one({"id": order_id}, {"_id": 0})
     return order

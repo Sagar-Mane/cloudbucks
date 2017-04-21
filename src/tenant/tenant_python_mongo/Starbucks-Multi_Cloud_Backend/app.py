@@ -1,9 +1,13 @@
+import getopt
+
 from flask import Flask, json
 from flask import jsonify
 import uuid
 import Starbucks_Api
+import sys
 
 app = Flask(__name__)
+#print sys.argv[1]+"/v3/starbucks/order/" "id"  "/pay"
 
 @app.route("/",methods=['GET'])
 def main():
@@ -14,7 +18,7 @@ def main():
 def place_order():
     order_id = uuid.uuid1()
     id = str(order_id)
-    order=Starbucks_Api.place_Order(id)
+    order=Starbucks_Api.place_Order(id,sys.argv[1])
     return json.dumps(order)
 
 @app.route("/v3/starbucks/order/<string:order_id>", methods=['GET'])
