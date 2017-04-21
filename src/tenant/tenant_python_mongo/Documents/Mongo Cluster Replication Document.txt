@@ -1,0 +1,26 @@
+main => sudo mongod --replSet "rs0"
+new putty => main => mongo
+
+rs.initiate( {
+   _id : "rs0",
+   members: [ { _id : 0, host : "172.31.5.46:27017" } ]
+})
+
+rs.conf()
+
+second => sudo mongod --replSet "rs0"
+
+main (second putty) =>  rs.add("172.31.14.31")
+
+third => sudo mongod --replSet "rs0"
+
+main (second putty) =>  rs.add("172.31.8.200")
+
+
+
+sudo /usr/bin/python Starbucks-Multi_Cloud_Backend/app.py
+
+
+
+
+
