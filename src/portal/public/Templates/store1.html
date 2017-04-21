@@ -96,9 +96,9 @@
       <th scope="row">{{count}}</th>
       <td>{{x.id}}</td>
       <td>{{x.status}}</td>
-      <td><button type="submit" class="btn btn-success" ng-click="payOrder(x.id)">Pay</button></td>
-      <td><button type="submit" class="btn btn-warning" ng-click="updateOrder(x.id)">Update</button></td>
-      <td><button type="submit" class="btn btn-danger" ng-click="deleteOrder(x.id)">Delete</button></td>
+      <td><button type="submit" class="btn btn-success" ng-click="payOrder(x.links.payment)">Pay</button></td>
+      <td><button type="submit" class="btn btn-warning" ng-click="updateOrder(x.links.order)">Update</button></td>
+      <td><button type="submit" class="btn btn-danger" ng-click="deleteOrder(x.links.order)">Delete</button></td>
       
     </tr>
   </tbody>
