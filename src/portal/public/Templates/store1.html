@@ -94,11 +94,11 @@
   <tbody>
     <tr ng-repeat="x in orders">
       <th scope="row">{{count}}</th>
-      <td>{{x.order.id}}</td>
-      <td>{{x.order.status}}</td>
-      <td><button type="submit" class="btn btn-success" ng-click="payOrder(x.order.id)">Pay</button></td>
-      <td><button type="submit" class="btn btn-warning" ng-click="updateOrder(x.order.id)">Update</button></td>
-      <td><button type="submit" class="btn btn-danger" ng-click="deleteOrder(x.order.id)">Delete</button></td>
+      <td>{{x.id}}</td>
+      <td>{{x.status}}</td>
+      <td><button type="submit" class="btn btn-success" ng-click="payOrder(x.id)">Pay</button></td>
+      <td><button type="submit" class="btn btn-warning" ng-click="updateOrder(x.id)">Update</button></td>
+      <td><button type="submit" class="btn btn-danger" ng-click="deleteOrder(x.id)">Delete</button></td>
       
     </tr>
   </tbody>

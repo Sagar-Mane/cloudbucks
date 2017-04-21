@@ -24,7 +24,8 @@ app.controller("store1_controller",function($scope,$http,$rootScope,$interval){
 		$scope.getOrders=function(){
 			$http({
 				method:'GET',
-				url:'http://54.183.220.137:90/v3/starbucks/orders',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				url:'http://52.53.220.34:8000/store1/v3/starbucks/orders',
 			}).success(function(data){
 				console.log("Order Paid"+JSON.stringify(data));
 				$scope.orders=data;
