@@ -273,6 +273,8 @@ func UpdateOrderEndpoint(w http.ResponseWriter, req *http.Request) {
 }
 
 func CancelOrderEndpoint(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	var n1qlParams []interface{}
 	query := gocb.NewN1qlQuery("SELECT * FROM starbucks AS ordr WHERE META(ordr).id = $1")
 	params := mux.Vars(req)
