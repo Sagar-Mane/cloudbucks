@@ -20,7 +20,23 @@ function fullUrl(req) {
 
 
 routes.get('/',function(req, res){
+	res.header('Access-Control-Allow-Origin', '*');
 	res.send("Health check successful!");
+});
+
+routes.all('*', function(req, res, next) {
+    // add details of what is allowed in HTTP request headers to the response headers
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Credentials', false);
+    res.header('Access-Control-Max-Age', '86400');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+    // the next() function continues execution and will move onto the requested URL/URI
+    next();
+});
+
+routes.options('*', function(req, res) {
+    res.sendStatus(200);
 });
 
 /*
@@ -83,7 +99,10 @@ routes.get('/orders',function(req, res){
 routes.post('/order',function(req, res){
 	var randId = randomId();
 	var baseUrl = fullUrl(req);
-	
+        //console.log(req.body);
+	  req.on('data', (data) => {
+	    console.log(data.toString());
+	  });
 	var order = new models.instance.Order({
 		id : randId,
 		items : {qty:req.body.items[0].qty,name:req.body.items[0].name,milk:req.body.items[0].milk,size:req.body.items[0].size},
