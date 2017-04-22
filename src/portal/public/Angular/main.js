@@ -2,6 +2,12 @@ var app = angular.module('myapp', [ 'ngRoute' ]);
 
 var link = 'http://localhost:9090';
 
+/*function show(link) {
+	//document.getElementById('id02').style.display='block';
+	//console.log('Hi');
+	alert(link);
+}
+*/
 app.config(function($routeProvider) {
 	console.log("in route provider");
 	$routeProvider.when("/store1", {
@@ -46,6 +52,8 @@ app.controller("store1_controller", function($scope, $http, $route, $rootScope,
 						"size" : $scope.size
 						} ]
 					};
+		
+		console.log(OrderDetails);
 						
 		$http({
 			method : 'POST',
@@ -110,6 +118,7 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
 	$scope.show = false;
 	
 	$scope.place_order_flag = true;
+	$scope.update_order_flag = true;
 
 	$scope.getOrders = function() {
 		$http({
@@ -133,11 +142,15 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
 						"size" : $scope.size
 						} ]
 					};
+		
+		console.log(OrderDetails);
+		
 		$http({
 			method : 'POST',
 			url : link + '/v3/starbucks/order',
-			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-			data : $httpParamSerializer(OrderDetails)
+			headers: {'Content-Type': 'application/json; charset=utf-8'},
+			//headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			data : OrderDetails//$httpParamSerializer(OrderDetails)
 		}).success(function(data) {
 			console.log("ORDER PLACE RESULT");
 			console.log(data);
@@ -145,9 +158,7 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
 			//message should be displayed that your order has been placed
 			//manage this flag in UI
 			$scope.place_order_flag = false;
-			
-			
-            //setTimeout($route.reload(), 3000);
+
 		});
 	};
 
@@ -164,18 +175,50 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
         });
 
     };
+    
+    
+    $scope.showUpdatePopUp = function (url) {
+    	console.log("Reporting from show pop up function");
+    	console.log(url);
+    	//var update = url;
+    	//console.log(udate)
+    	$scope.up_url = url;
+    	document.getElementById('id02').style.display='block';
+    	//document.getElementById('url').value = url;
+    	
+    }
 
-    $scope.updateOrder = function(url) {
-        console.log("Reporting from update order " + url);
+    $scope.updateOrder = function() {
+        console.log("Reporting from update order ");
+        //console.log($scope.up_url);
+        var url = $scope.up_url;
+        console.log(url);
+        
+		var UpdateOrderDetails = {
+				"location" : "store-2",
+				"items" : [ {
+				"qty" : $scope.up_quantity,
+				"name" : $scope.up_name,
+				"milk" : $scope.up_milk,
+				"size" : $scope.up_size
+				} ]
+			};
+        
+		console.log(UpdateOrderDetails);
+        
         $http({
             method : 'PUT',
             url : url,
-            data : {
-            }
+            //headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: {'Content-Type': 'application/json; charset=utf-8'},
+            data : UpdateOrderDetails//$httpParamSerializer(UpdateOrderDetails)
         }).success(function(data) {
-            console.log("UPDATED RESULT");
+            console.log("ORDER HAS BEEN UPDATED");
             console.log(data);
-            setTimeout($route.reload(), 3000);
+            
+            //message should be displayed that your order has been placed
+			//manage this flag in UI
+			$scope.update_order_flag = false;
         });
 
     };
