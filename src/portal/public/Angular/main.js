@@ -108,6 +108,8 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
 	console.log("Reporting from store 2 controller");
 	$scope.success = true;
 	$scope.show = false;
+	
+	$scope.place_order_flag = true;
 
 	$scope.getOrders = function() {
 		$http({
@@ -139,7 +141,13 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
 		}).success(function(data) {
 			console.log("ORDER PLACE RESULT");
 			console.log(data);
-            setTimeout($route.reload(), 3000);
+			
+			//message should be displayed that your order has been placed
+			//manage this flag in UI
+			$scope.place_order_flag = false;
+			
+			
+            //setTimeout($route.reload(), 3000);
 		});
 	};
 
