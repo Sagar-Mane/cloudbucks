@@ -87,7 +87,7 @@
 											Order</button>
 										<div class="alert alert-danger" ng-hide="place_order_flag">
 											<strong>Hey! Congratulations! Your order has been
-												successfully<br> placed! <br> Sit back and Enjoy
+												successfully<br> PLACED! <br> Sit back and Enjoy
 												till we brew you the finest coffee!
 											</strong>
 										</div>
@@ -168,16 +168,6 @@
 									</div>
 								</div>
 
-
-								<!-- HIDDEN URL FIELD-->
-								<div class="form-group">
-									<label class="col-md-4 control-label">URI</label>
-									<div class="col-sm-3">
-										<input id="url" type="text" class="form-control input-md"
-											ng-model="up_url" readonly>
-									</div>
-								</div>
-
 								<!--Button place order-->
 								<div class="form-group">
 									<label class="col-md-4 control-label"></label>
@@ -186,10 +176,7 @@
 										<button id="submit" ng-click="updateOrder()">UPDATE
 											ORDER</button>
 										<div class="alert alert-danger" ng-hide="update_order_flag">
-											<strong>Hey! Congratulations! Your order has been
-												successfully<br> UPDATED! <br> Sit back and Enjoy
-												till we brew you the finest coffee!
-											</strong>
+											<strong>{{flag}}</strong>
 										</div>
 									</div>
 
@@ -214,7 +201,7 @@
 			<table class="table table-hover">
 				<thead>
 					<tr>
-						<th>#</th>
+						<!-- <th>#</th> -->
 						<th>Order Name</th>
 						<th>MILK</th>
 						<th>SIZE</th>
@@ -228,13 +215,11 @@
 				<tbody>
 					<tr ng-repeat="x in orders">
 
-						<th scope="row">{{count}}</th>
+						<!-- <th scope="row">{{count}}</th> -->
 						<td>{{x.items.name}}</td>
 						<td>{{x.items.milk}}</td>
 						<td>{{x.items.size}}</td>
 						<td>{{x.items.qty}}</td>
-
-
 						<td>{{x.status}}</td>
 
 
@@ -254,6 +239,14 @@
 					</tr>
 				</tbody>
 			</table>
+			
+			<div class="alert alert-danger" ng-hide="pay_order_flag">
+					<strong>{{flag_pay}}</strong>
+			</div>
+			
+			<div class="alert alert-danger" ng-hide="del_order_flag">
+					<strong>{{flag_del}}</strong>
+			</div>
 
 		</div>
 </body>

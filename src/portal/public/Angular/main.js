@@ -119,7 +119,9 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
 	
 	$scope.place_order_flag = true;
 	$scope.update_order_flag = true;
-
+	$scope.pay_order_flag = true;
+	$scope.del_order_flag = true;
+	
 	$scope.getOrders = function() {
 		$http({
 			method : 'GET',
@@ -170,18 +172,29 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(data) {
             console.log("DELETED RESULT");
-            console.log(data);
-            setTimeout($route.reload(), 3000);
+            console.log(data);            console.log(data.status);
+            
+            if (data.status == "error"){
+            	$scope.flag_del = "DELETE ERROR! CANT DELETE A COMPLETED ORDER"
+            } else {
+            	$scope.flag_del = "ORDER DELETED!"
+            }
+            
+            //message should be displayed that your order has been DELETED
+			//manage this flag in UI           
+            $scope.del_order_flag = false;
+
+            console.log("Order PAID");
+            
+            //setTimeout($route.reload(), 3000);
         });
 
     };
     
     
     $scope.showUpdatePopUp = function (url) {
-    	console.log("Reporting from show pop up function");
+    	console.log("inside showUpdatePopUp");
     	console.log(url);
-    	//var update = url;
-    	//console.log(udate)
     	$scope.up_url = url;
     	document.getElementById('id02').style.display='block';
     	//document.getElementById('url').value = url;
@@ -214,7 +227,15 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
             data : UpdateOrderDetails//$httpParamSerializer(UpdateOrderDetails)
         }).success(function(data) {
             console.log("ORDER HAS BEEN UPDATED");
-            console.log(data);
+            console.log(data.status);
+            
+            if (data.status == "error"){
+            	$scope.flag = "UPDATE ERROR! CANT DO THAT!"
+            } else {
+            	$scope.flag = "Hey! Congratulations! Your order has been" +
+								"successfully<br> UPDATED! <br> Sit back and Enjoy" +
+								"till we brew you the finest coffee!"
+            }
             
             //message should be displayed that your order has been placed
 			//manage this flag in UI
@@ -230,8 +251,21 @@ app.controller("store2_controller", function($scope, $route, $httpParamSerialize
             url : url,
         }).success(function(data) {
             console.log(data);
+            
+            console.log(data.status);
+            
+            if (data.status == "error"){
+            	$scope.flag_pay = "PAYMENT ERROR! CANT PAY A PAID ORDER"
+            } else {
+            	$scope.flag_pay = "WE GOT THE MONEY! NOW YOU GET THE COFFEE"
+            }
+            
+            //message should be displayed that your order has been PAID
+			//manage this flag in UI           
+            $scope.pay_order_flag = false;
+
             console.log("Order PAID");
-            setTimeout($route.reload(), 3000);
+            //setTimeout($route.reload(), 3000);
         });
     };
 	$scope.getOrders();
