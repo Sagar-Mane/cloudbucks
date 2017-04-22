@@ -78,7 +78,19 @@ routes.get('/order/:order_id',function(req, res){
 					var status = '{"status":"error","message":"Order not found."}';
 					res.json(JSON.parse(status));
 				} else {
-					res.json(order[0]);
+					var out = {
+							id : order[0].id,
+							items : [{qty:order[0].items.qty,
+								  name:order[0].items.name,
+								  milk:order[0].items.milk,
+								  size:order[0].items.size
+								  }],
+							links : order[0].links,
+							location : order[0].location,
+							message : order[0].message, 
+							status : order[0].status
+						};
+					res.json(out);
 				}
 			}
 		});
@@ -91,7 +103,25 @@ routes.get('/orders',function(req, res){
 			var staus = '{"status":"error","message":"Server Error, Try Again Later."}';
 			res.json(JSON.parse(status));
 		} else {
-			res.json(order);
+			var orders = [];
+			for ( ord in order) {
+				var list = [];
+				list.push({qty:order[ord].items.qty,
+					  name:order[ord].items.name,
+					  milk:order[ord].items.milk,
+					  size:order[ord].items.size
+					  });
+				var out = {
+					id : order[ord].id,
+					items : list,
+					links : order[ord].links,
+					location : order[ord].location,
+					message : order[ord].message, 
+					status : order[ord].status
+				};
+				orders.push(out);
+			}
+			res.json(orders);
 		}
 	});
 });
