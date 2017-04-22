@@ -99,10 +99,7 @@ routes.get('/orders',function(req, res){
 routes.post('/order',function(req, res){
 	var randId = randomId();
 	var baseUrl = fullUrl(req);
-        //console.log(req.body);
-	  req.on('data', (data) => {
-	    console.log(data.toString());
-	  });
+	console.log(req.body);
 	var order = new models.instance.Order({
 		id : randId,
 		items : {qty:req.body.items[0].qty,name:req.body.items[0].name,milk:req.body.items[0].milk,size:req.body.items[0].size},
