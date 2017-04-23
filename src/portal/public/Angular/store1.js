@@ -12,6 +12,7 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
     $scope.msg_flag = true;
 
     storeName = "/store1";
+
     $scope.getOrders = function () {
         $http({
             method: 'GET',
@@ -22,6 +23,7 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
     };
 
     $scope.placeOrder = function () {
+        $scope.msg_flag = true;
         var order = {
             "location": "store-1",
             "items": [{
@@ -45,7 +47,7 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
             //message should be displayed that your order has been placed
             //manage this flag in UI
             $scope.msg_flag = false;
-            setTimeout($route.reload(), 2000);
+            $route.reload();
         });
 
     };
@@ -70,6 +72,7 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
     };
 
     $scope.updateOrder = function (url) {
+        $scope.msg_flag = true;
         var url = $scope.up_url;
         console.log(url);
 
@@ -89,6 +92,7 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
             url: url,
             data: order
         }).success(function (data) {
+            $scope.msg = 'Order updated';
             //message should be displayed that your order has been placed
             //manage this flag in UI
             $scope.msg_flag = false;

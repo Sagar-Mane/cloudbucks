@@ -6,7 +6,7 @@
  */
 
 angular.module('myapp').controller("store2_controller", function($scope, $route, $httpParamSerializer, $http) {
-	console.log("Reporting from store 2 controller nachiket");
+	console.log("Reporting from store 2 controller");
 	$scope.success = true;
 	$scope.show = false;
 	
@@ -26,7 +26,7 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
 
 	$scope.placeOrder = function() {
 		console.log("Reporting from place order");
-		
+        $scope.msg_flag = true;
 		var OrderDetails = {
 						"location" : "store-1",
 						"items" : [ {
@@ -41,7 +41,7 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
 		
 		$http({
 			method : 'POST',
-			url : link + '/v3/starbucks/order',
+			url : link + storeName + '/v3/starbucks/order',
 			headers: {'Content-Type': 'application/json; charset=utf-8'},
 			//headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			data : OrderDetails//$httpParamSerializer(OrderDetails)
@@ -50,7 +50,7 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
      		//message should be displayed that your order has been placed
 			//manage this flag in UI
             $scope.msg_flag = false;
-
+            $route.reload();
 		});
 	};
 
@@ -89,6 +89,7 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
     }
 
     $scope.updateOrder = function() {
+        $scope.msg_flag = true;
         console.log("Reporting from update order ");
         //console.log($scope.up_url);
         var url = $scope.up_url;
@@ -118,9 +119,11 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
                 $scope.msg = data.message;
                 $scope.msg_flag = false;
         	} else {
+                $scope.msg = 'Order updated';
         		console.log("ORDER HAS BEEN UPDATED");
                 console.log(data.status);
                 $scope.msg_flag = false;
+                setTimeout($route.reload(), 2000);
         	}
         });
 

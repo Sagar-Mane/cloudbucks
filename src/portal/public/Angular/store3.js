@@ -27,8 +27,9 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
 	};
 
 	$scope.placeOrder = function() {
+        $scope.msg_flag = true;
 		console.log("Reporting from place order");
-		
+
 		var OrderDetails = {
 						"location" : "store-3",
 						"items" : [ {
@@ -44,10 +45,11 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			data : OrderDetails
 		}).success(function(data) {
+            $scope.msg = "Order placed";
 			console.log("ORDER PLACE RESULT");
 			console.log(data);
             $scope.msg_flag = false;
-            setTimeout($route.reload(), 3000);
+            $route.reload();
 		});
 	};
 
@@ -69,6 +71,7 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
     };
 
     $scope.updateOrder = function() {
+        $scope.msg_flag = true;
         console.log("Reporting from update order " + url);
         var url = $scope.up_url;
         var order = {
