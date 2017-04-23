@@ -6,26 +6,20 @@
  * Store 3
 */
 
-var link = 'http://localhost:90';
-
-
 angular.module('myapp').controller("store3_controller", function($scope, $route, $http, $httpParamSerializer) {
 	console.log("Reporting from store 3 controller nachiket");
 
 	$scope.success = true;
 	$scope.show = false;
-	
-	$scope.place_order_flag = true;
-    $scope.update_order_flag = true;
-    $scope.pay_order_flag = true;
-    $scope.del_order_flag = true;
 
-	
+    $scope.msg_flag = true;
+
+    storeName = "/store3";
 
 	$scope.getOrders = function() {
 		$http({
 			method : 'GET',
-			url : link + '/v3/starbucks/orders',
+			url : link + storeName + '/v3/starbucks/orders',
 		}).success(function(data) {
 			console.log("Order Paid" + JSON.stringify(data));
 			$scope.orders = data;
@@ -46,14 +40,14 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
 					};
 		$http({
 			method : 'POST',
-			url : link + '/v3/starbucks/order',
+			url : link + storeName + '/v3/starbucks/order',
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			data : OrderDetails
 		}).success(function(data) {
 			console.log("ORDER PLACE RESULT");
 			console.log(data);
+            $scope.msg_flag = false;
             setTimeout($route.reload(), 3000);
-            $scope.place_order_flag = false;
 		});
 	};
 
@@ -67,9 +61,9 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
             console.log("DELETED RESULT");
             console.log(data);
             if (data.status == "error"){
-            	$scope.flag_del = data.message
+                $scope.msg = data.message
             }
-            $scope.del_order_flag = false;
+            $scope.msg_flag = false;
         });
 
     };
@@ -78,7 +72,7 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
         console.log("Reporting from update order " + url);
         var url = $scope.up_url;
         var order = {
-                "location" : "store-1",
+                "location" : "store-3",
                 "items" : [ {
                     "qty" : $scope.up_quantity,
                     "name" : $scope.up_name,
@@ -94,13 +88,11 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
             console.log("UPDATED RESULT");
             console.log(data);
             if (data.status == "error"){
-            	$scope.flag = "UPDATE ERROR! CANT DO THAT!"
+                $scope.msg = data.message
             } else {
-            	$scope.flag = "Hey! Congratulations! Your order has been" +
-								"successfully<br> UPDATED! <br> Sit back and Enjoy" +
-								"till we brew you the finest coffee!"
+                $scope.msg = "Order updated"
             }
-            $scope.update_order_flag = false;
+            $scope.msg_flag = false;
         });
 
     };
@@ -108,8 +100,8 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
     $scope.payOrder = function(url) {
         console.log("Reporting from pay order " + url);
         if(!url) {
-            $scope.flag_pay = "Can't pay for this order";
-            $scope.pay_order_flag = false;
+            $scope.msg = "Can't pay for this order";
+            $scope.msg_flag = false;
             return;
         }
         $http({
@@ -123,8 +115,8 @@ angular.module('myapp').controller("store3_controller", function($scope, $route,
             } else {
                 console.log(data);
                 console.log("Order PAID");
-                $scope.flag_pay = "Payment done"
-                $scope.pay_order_flag = false;
+                $scope.msg = "Payment done"
+                $scope.msg_flag = false;
                 console.log("Order PAID");
                 $route.reload();
             }

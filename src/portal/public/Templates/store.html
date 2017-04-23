@@ -17,6 +17,10 @@
             class="w3-button w3-black w3-hover-red">Place Order
     </button>
 
+    <div class="alert alert-warning" ng-hide="msg_flag">
+        <strong style="text-align: center">{{msg}}</strong>
+    </div>
+
     <div id="id01" class="w3-modal">
 
         <div class="w3-modal-content w3-card-4">
@@ -175,8 +179,8 @@
                                 <div class="col-sm-3">
                                     <button id="submit" ng-click="updateOrder()">Update
                                     </button>
-                                    <div class="alert alert-danger" ng-hide="update_order_flag">
-                                        <strong>{{flag}}</strong>
+                                    <div class="alert alert-warning" ng-hide="msg_flag">
+                                        <strong>{{msg}}</strong>
                                     </div>
                                 </div>
 
@@ -242,15 +246,6 @@
             </tr>
             </tbody>
         </table>
-
-        <div class="alert alert-danger" ng-hide="pay_order_flag">
-            <strong>{{flag_pay}}</strong>
-        </div>
-
-        <div class="alert alert-danger" ng-hide="del_order_flag">
-            <strong>{{flag_del}}</strong>
-        </div>
-
     </div>
 </body>
 </html>

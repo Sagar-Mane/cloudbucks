@@ -5,33 +5,23 @@
 /**
  * Store 1
  */
-
-
 angular.module('myapp').controller("store1_controller", function ($scope, $http, $route, $rootScope,
                                                                   $interval) {
     $scope.success = true;
-    console.log("Reporting from store 1 controller");
     $scope.show = false;
+    $scope.msg_flag = true;
 
-    $scope.place_order_flag = true;
-    $scope.update_order_flag = true;
-    $scope.pay_order_flag = true;
-    $scope.del_order_flag = true;
-
-    storeName = '/store1';
+    storeName = "/store1";
     $scope.getOrders = function () {
         $http({
             method: 'GET',
             url: link + storeName + '/v3/starbucks/orders',
         }).success(function (data) {
-            console.log("Order Paid" + JSON.stringify(data));
             $scope.orders = data;
         });
     };
 
     $scope.placeOrder = function () {
-        console.log("Reporting from place order");
-
         var order = {
             "location": "store-1",
             "items": [{
@@ -46,44 +36,40 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
 
         $http({
             method: 'POST',
-            url: link + '/v3/starbucks/order',
+            url: link + storeName + '/v3/starbucks/order',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             data: order
 
         }).success(function (data) {
-            console.log("Order placed");
+            $scope.msg = "Order placed";
             //message should be displayed that your order has been placed
             //manage this flag in UI
-            $scope.place_order_flag = false;
+            $scope.msg_flag = false;
+            setTimeout($route.reload(), 2000);
         });
 
     };
 
 
     $scope.deleteOrder = function (url) {
-        console.log("Reporting from delete order " + url);
         $http({
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             method: 'DELETE',
             url: url
         }).success(function (data) {
-            console.log("Order Deleted");
-            $scope.flag_del = "Order cancelled"
+            $scope.msg = "Order cancelled";
             //message should be displayed that your order has been DELETED
             //manage this flag in UI
-            $scope.del_order_flag = false;
-            $route.reload();
-            console.log("function deleteOrder ended");
+            $scope.msg_flag = false;
+            setTimeout($route.reload(), 1000);
         }).error(function(error, status) {
-            console.log(error);
-            $scope.flag_del = error.message;
-            $scope.del_order_flag = false;
+            $scope.msg = error.message;
+            $scope.msg_flag = false;
         });
 
     };
 
     $scope.updateOrder = function (url) {
-        console.log("Reporting from update order " + url);
         var url = $scope.up_url;
         console.log(url);
 
@@ -97,44 +83,35 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
             } ]
         };
 
-        console.log(order);
-
         $http({
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             method: 'PUT',
             url: url,
             data: order
         }).success(function (data) {
-            console.log("ORDER HAS BEEN UPDATED");
-            console.log(data.status);
-
             //message should be displayed that your order has been placed
             //manage this flag in UI
-            $scope.update_order_flag = false;
+            $scope.msg_flag = false;
         }).error(function(error, status) {
             console.log(error);
-            $scope.flag = error.message;
-            $scope.update_order_flag = false;
+            $scope.msg = error.message;
+            $scope.msg_flag = false;
         });
 
     };
 
     $scope.showUpdatePopUp = function (url) {
-        console.log("inside showUpdatePopUp");
-        console.log(url);
         $scope.up_url = url;
         document.getElementById('id02').style.display='block';
         //document.getElementById('url').value = url;
     }
 
     $scope.payOrder = function (url) {
-        console.log("Reporting from pay order " + url);
         if(!url) {
-            $scope.flag_pay = "Can't pay for this order";
-            $scope.pay_order_flag = false;
+            $scope.msg = "Can't pay for this order";
+            $scope.msg_flag = false;
             return;
         }
-
 
         $http({
             method: 'POST',
@@ -142,14 +119,14 @@ angular.module('myapp').controller("store1_controller", function ($scope, $http,
         }).success(function (data) {
             console.log(data);
             console.log("Order PAID");
-            $scope.flag_pay = "Payment done"
-            $scope.pay_order_flag = false;
+            $scope.msg = "Payment done";
+            $scope.msg_flag = false;
             console.log("Order PAID");
             $route.reload();
         }).error(function(error, status) {
             console.log(error);
-            $scope.flag_pay = error.message;
-            $scope.pay_order_flag = false;
+            $scope.msg = error.message;
+            $scope.msg_flag = false;
         });
     };
     $scope.getOrders();

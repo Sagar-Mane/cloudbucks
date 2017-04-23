@@ -1,6 +1,6 @@
 var app = angular.module('myapp', [ 'ngRoute' ]);
 
-var link = 'http://192.168.99.100:90';
+var link = 'http://54.67.49.112:8000';
 
 app.config(function($routeProvider) {
 	console.log("in route provider");

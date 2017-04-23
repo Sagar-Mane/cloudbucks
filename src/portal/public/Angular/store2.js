@@ -10,15 +10,14 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
 	$scope.success = true;
 	$scope.show = false;
 	
-	$scope.place_order_flag = true;
-	$scope.update_order_flag = true;
-	$scope.pay_order_flag = true;
-	$scope.del_order_flag = true;
-	
+	$scope.msg_flag = true;
+
+    storeName = "/store2";
+
 	$scope.getOrders = function() {
 		$http({
 			method : 'GET',
-			url : link + '/v3/starbucks/orders',
+			url : link + storeName + '/v3/starbucks/orders',
 		}).success(function(data) {
 			console.log("Order Paid" + JSON.stringify(data));
 			$scope.orders = data;
@@ -50,7 +49,7 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
 			 console.log("Order placed");
      		//message should be displayed that your order has been placed
 			//manage this flag in UI
-			$scope.place_order_flag = false;
+            $scope.msg_flag = false;
 
 		});
 	};
@@ -64,14 +63,14 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
         }).success(function(data) {
        		console.log(data);
         	if(data.status === 'error') {
-        		$scope.flag_del = data.message;
-                $scope.del_order_flag = false;
+                $scope.msg = data.message;
+                $scope.msg_flag = false;
         	} else {
         		console.log("Order Deleted");
-                $scope.flag_del = "Order cancelled"
+                $scope.msg = "Order cancelled"
                 //message should be displayed that your order has been DELETED
                 //manage this flag in UI
-                $scope.del_order_flag = false;
+                $scope.msg_flag = false;
                 $route.reload();
                 console.log("function deleteOrder ended");
         	}
@@ -116,12 +115,12 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
         }).success(function(data) {
    		 	console.log(data);
         	if (data.status === 'error') {
-        		$scope.flag = data.message;
-                $scope.update_order_flag = false;
+                $scope.msg = data.message;
+                $scope.msg_flag = false;
         	} else {
         		console.log("ORDER HAS BEEN UPDATED");
                 console.log(data.status);
-                $scope.update_order_flag = false;
+                $scope.msg_flag = false;
         	}
         });
 
@@ -130,8 +129,8 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
     $scope.payOrder = function(url) {
         console.log("Reporting from pay order " + url);
         if(!url) {
-            $scope.flag_pay = "Can't pay for this order";
-            $scope.pay_order_flag = false;
+            $scope.msg = "Can't pay for this order";
+            $scope.msg_flag = false;
             return;
         }
         $http({
@@ -140,13 +139,13 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
         }).success(function(data) {
             console.log(data);
             if (data.status==='error') {
-            	$scope.flag_pay = data.message;
-                $scope.pay_order_flag = false;
+                $scope.msg= data.message;
+                $scope.msg_flag = false;
             } else {
                 console.log(data);
                 console.log("Order PAID");
-                $scope.flag_pay = "Payment done"
-                $scope.pay_order_flag = false;
+                $scope.msg = "Payment done"
+                $scope.msg_flag = false;
                 console.log("Order PAID");
                 $route.reload();
             }
