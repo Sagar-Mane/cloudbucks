@@ -5,8 +5,6 @@
  * Store 2
  */
 
-var link = 'http://localhost:9090';
-
 angular.module('myapp').controller("store2_controller", function($scope, $route, $httpParamSerializer, $http) {
 	console.log("Reporting from store 2 controller nachiket");
 	$scope.success = true;
@@ -49,10 +47,8 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
 			//headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			data : OrderDetails//$httpParamSerializer(OrderDetails)
 		}).success(function(data) {
-			console.log("ORDER PLACE RESULT");
-			console.log(data);
-			
-			//message should be displayed that your order has been placed
+			 console.log("Order placed");
+     		//message should be displayed that your order has been placed
 			//manage this flag in UI
 			$scope.place_order_flag = false;
 
@@ -66,22 +62,19 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
             url : url,
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         }).success(function(data) {
-            console.log("DELETED RESULT");
-            console.log(data);            console.log(data.status);
-            
-            if (data.status == "error"){
-            	$scope.flag_del = "DELETE ERROR! CANT DELETE A COMPLETED ORDER"
-            } else {
-            	$scope.flag_del = "ORDER DELETED!"
-            }
-            
-            //message should be displayed that your order has been DELETED
-			//manage this flag in UI           
-            $scope.del_order_flag = false;
-
-            console.log("function deleteOrder ended");
-            
-            //setTimeout($route.reload(), 3000);
+       		console.log(data);
+        	if(data.status === 'error') {
+        		$scope.flag_del = data.message;
+                $scope.del_order_flag = false;
+        	} else {
+        		console.log("Order Deleted");
+                $scope.flag_del = "Order cancelled"
+                //message should be displayed that your order has been DELETED
+                //manage this flag in UI
+                $scope.del_order_flag = false;
+                $route.reload();
+                console.log("function deleteOrder ended");
+        	}
         });
 
     };
@@ -121,46 +114,42 @@ angular.module('myapp').controller("store2_controller", function($scope, $route,
             headers: {'Content-Type': 'application/json; charset=utf-8'},
             data : UpdateOrderDetails//$httpParamSerializer(UpdateOrderDetails)
         }).success(function(data) {
-            console.log("ORDER HAS BEEN UPDATED");
-            console.log(data.status);
-            
-            if (data.status == "error"){
-            	$scope.flag = "UPDATE ERROR! CANT DO THAT!"
-            } else {
-            	$scope.flag = "Hey! Congratulations! Your order has been" +
-								"successfully<br> UPDATED! <br> Sit back and Enjoy" +
-								"till we brew you the finest coffee!"
-            }
-            
-            //message should be displayed that your order has been placed
-			//manage this flag in UI
-			$scope.update_order_flag = false;
+   		 	console.log(data);
+        	if (data.status === 'error') {
+        		$scope.flag = data.message;
+                $scope.update_order_flag = false;
+        	} else {
+        		console.log("ORDER HAS BEEN UPDATED");
+                console.log(data.status);
+                $scope.update_order_flag = false;
+        	}
         });
 
     };
 
     $scope.payOrder = function(url) {
         console.log("Reporting from pay order " + url);
+        if(!url) {
+            $scope.flag_pay = "Can't pay for this order";
+            $scope.pay_order_flag = false;
+            return;
+        }
         $http({
             method : 'POST',
             url : url,
         }).success(function(data) {
             console.log(data);
-            
-            console.log(data.status);
-            
-            if (data.status == "error"){
-            	$scope.flag_pay = "PAYMENT ERROR! CANT PAY A PAID ORDER"
+            if (data.status==='error') {
+            	$scope.flag_pay = data.message;
+                $scope.pay_order_flag = false;
             } else {
-            	$scope.flag_pay = "WE GOT THE MONEY! NOW YOU GET THE COFFEE"
+                console.log(data);
+                console.log("Order PAID");
+                $scope.flag_pay = "Payment done"
+                $scope.pay_order_flag = false;
+                console.log("Order PAID");
+                $route.reload();
             }
-            
-            //message should be displayed that your order has been PAID
-			//manage this flag in UI           
-            $scope.pay_order_flag = false;
-
-            console.log("Order PAID");
-            //setTimeout($route.reload(), 3000);
         });
     };
 	$scope.getOrders();
